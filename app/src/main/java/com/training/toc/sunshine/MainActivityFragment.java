@@ -49,7 +49,7 @@ public class MainActivityFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            Integer locationId = 725992;
+            String locationId = "725992";
             new GetForecastJsonTask().execute(locationId);
             return true;
         }
@@ -85,17 +85,28 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-    private class GetForecastJsonTask extends AsyncTask<Integer, Void, String> {
+    private class GetForecastJsonTask extends AsyncTask<String, Void, String> {
         @Override
-        protected String doInBackground(Integer... params) {
+        protected String doInBackground(String... params) {
+            if (params.length == 0) {
+                return null;
+            }
+
             // Reading forecast from web:
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             String forecastJsonStr = null;
 
+            String format = "json";
+            String units = "metric";
+            int numDays = 7;
+
             try {
-//                String baseUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?id=725992&mode=json&units=metric&cnt=7";
-//                String apiKey = "&appid=" + BuildConfig.OPEN_WEATHER_MAP_API_KEY;
+                final String QUERY_PARAM = "id";
+                final String FORMAT_PARAM = "mode";
+                final String UNITS_PARAM = "units";
+                final String DAYS_PARAM = "cnt";
+                final String APPID_PARAM = "appid";
 
                 Uri.Builder uriBuilder = new Uri.Builder();
                 uriBuilder.scheme("http")
@@ -104,11 +115,11 @@ public class MainActivityFragment extends Fragment {
                         .appendPath("2.5")
                         .appendPath("forecast")
                         .appendPath("daily")
-                        .appendQueryParameter("id", params[0].toString())
-                        .appendQueryParameter("mode", "json")
-                        .appendQueryParameter("units", "metric")
-                        .appendQueryParameter("cnt", "7")
-                        .appendQueryParameter("appid", BuildConfig.OPEN_WEATHER_MAP_API_KEY);
+                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(FORMAT_PARAM, format)
+                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                        .appendQueryParameter(APPID_PARAM, BuildConfig.OPEN_WEATHER_MAP_API_KEY);
 
                 String urlStr = uriBuilder.build().toString();
                 URL url = new URL(urlStr);
