@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -166,6 +168,12 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             Log.i(this.getClass().getSimpleName(), s);
+            try {
+                double maxTemp = WeatherDataParser.getMaxTemperatureForDay(s, 0);
+                Log.i(this.getClass().getSimpleName(), String.valueOf(maxTemp));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
